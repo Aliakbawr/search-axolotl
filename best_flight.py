@@ -3,11 +3,12 @@
 
 import pandas as pd
 import sys
+import time
 
 #If you need to use specific column of a specific row, use this line:)
 df = pd.read_csv('./Flight_Data.csv')
-print(df.iloc[1,6])
-
+# for n in range(0,5):
+#     print(df.iloc[n,6])
 
 #Implementing the graph class
 class Graph(object):
@@ -88,3 +89,58 @@ def dijkstra_algorithm(graph, start_node):
         unvisited_nodes.remove(current_min_node)
     
     return previous_nodes, shortest_path
+
+
+#Format the output in output 
+def print_result_dijkstra(previous_nodes, shortest_path, start_node, target_node):
+    n = 1
+#     print(f'''Flight #{n}
+# From: {start_node}
+# To: {target_node}
+# Duration:
+# Time: 
+# Price:''')
+
+    path = []
+    node = target_node
+    
+    while node != start_node:
+        print(f'Flight #{n}')
+        path.append(node)
+        node = previous_nodes[node]
+        if n==1:print(f'From: {start_node}')
+        else: print(f'From: {node}')
+        print(f'To: {previous_nodes[node]}')
+        n+=1
+        print('----------------------------')
+ 
+    # Add the start node manually
+    path.append(start_node)
+    print(" -> ".join(reversed(path)))
+
+#Modeling csv rows into lists 
+SourceAirports = df['SourceAirport'].tolist()
+SourceAirports= [x for i, x in enumerate(SourceAirports) if SourceAirports.index(x) == i]
+# print(SourceAirports_list)
+init_graph = {}
+
+#Modeling list items into graph nodes
+for node in SourceAirports:
+    init_graph[node] = {}
+
+#Modeling the distances into graph edges
+for n in range(0,5):
+    init_graph[df.iloc[n,1]][df.iloc[n,2]] = df.iloc[n,13]
+    # print(df.iloc[n,1],df.iloc[n,2],df.iloc[n,13])
+
+graph = Graph(SourceAirports, init_graph)
+#execution time for Dijkstra function calculation	
+start_time = time.process_time()
+previous_nodes, shortest_path = dijkstra_algorithm(graph=graph, start_node="Dubai International Airport")
+end_time = time.process_time()
+execution_time = end_time - start_time
+minutes = int(execution_time // 60)
+seconds = int(execution_time % 60)
+print(f"Dijkstra Algorithm\nExecution Time: {minutes}m{seconds}s\n.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-")
+print_result_dijkstra(previous_nodes, shortest_path, start_node="Dubai International Airport", target_node="Imam Khomeini International Airport")
+    
