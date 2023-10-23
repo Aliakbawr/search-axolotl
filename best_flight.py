@@ -9,10 +9,6 @@ import time
 filename = './Flight_Data.csv'
 df = pd.read_csv(filename)
 
-""" If you need to use specific column of a specific row, use this line:)
-for n in range(0,5):
-    print(df.iloc[n,6]) """
-
 #converting csv data into list of dictionaries
 def read_csv(filename):
     flights = []
@@ -29,6 +25,16 @@ def read_csv(filename):
             }
             flights.append(flight)
     return flights
+
+#Format the output 
+def desired_result_string(flight_number,SourceAirport,SourceAirport_Country,DestinationAirport,DestinationAirport_Country,Distance,FlyTime,Price):
+    return f'''Flight #{flight_number}:
+    From: {SourceAirport},{SourceAirport_Country}
+    To: {DestinationAirport},{DestinationAirport_Country}
+    Duration: {Distance}km
+    Time: {FlyTime}h
+    Price: {Price}$
+    ----------------------------'''
 
 #Implementing the graph class
 class Graph(object):
@@ -104,39 +110,13 @@ def dijkstra_algorithm(graph, start_node):
                 shortest_path[neighbor] = tentative_value
                 # We also update the best path to the current node
                 previous_nodes[neighbor] = current_min_node
+
  
         # After visiting its neighbors, we mark the node as "visited"
         unvisited_nodes.remove(current_min_node)
     
     return previous_nodes, shortest_path
 
-
-#Format the output in output 
-def print_result_dijkstra(previous_nodes, shortest_path, start_node, target_node):
-    n = 1
-#     print(f'''Flight #{n}
-# From: {start_node}
-# To: {target_node}
-# Duration:
-# Time: 
-# Price:''')
-
-    path = []
-    node = target_node
-    
-    while node != start_node:
-        print(f'Flight #{n}')
-        path.append(node)
-        node = previous_nodes[node]
-        if n==1:print(f'From: {start_node}')
-        else: print(f'From: {node}')
-        print(f'To: {previous_nodes[node]}')
-        n+=1
-        print('----------------------------')
- 
-    # Add the start node manually
-    path.append(start_node)
-    print(" -> ".join(reversed(path)))
 
 #Modeling csv rows into lists 
 SourceAirports = df['SourceAirport'].tolist()
