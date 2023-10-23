@@ -1,14 +1,34 @@
 #https://www.w3schools.com/python/pandas/default.asp
 #https://www.udacity.com/blog/2021/10/implementing-dijkstras-algorithm-in-python.html
 
+import csv
 import pandas as pd
 import sys
 import time
 
-#If you need to use specific column of a specific row, use this line:)
-df = pd.read_csv('./Flight_Data.csv')
-# for n in range(0,5):
-#     print(df.iloc[n,6])
+filename = './Flight_Data.csv'
+df = pd.read_csv(filename)
+
+""" If you need to use specific column of a specific row, use this line:)
+for n in range(0,5):
+    print(df.iloc[n,6]) """
+
+#converting csv data into list of dictionaries
+def read_csv(filename):
+    flights = []
+    with open(filename, 'r') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            flight = {
+                "Airline": row['Airline'],
+                "SourceAirport": row['SourceAirport'],
+                "DestinationAirport": row['DestinationAirport'],
+                "Distance": float(row['Distance']),
+                "FlyTime": float(row['FlyTime']),
+                "Price": float(row['Price'])
+            }
+            flights.append(flight)
+    return flights
 
 #Implementing the graph class
 class Graph(object):
