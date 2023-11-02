@@ -24,8 +24,17 @@ def a_generate_cost(param):
     pass
 
 
-def d_generated_cost(param):
-    return 1
+def dijkstra_generated_cost(param):
+
+    distance = param['Distance']
+    price = param['Price']
+    time = param['FlyTime']
+    w2 = 0.3  # Weight for distance
+    w3 = 0.3  # Weight for price
+    w1 = 0.4  # Weight for time
+
+    cost = w1 * time + w2 * distance + w3 * price
+    return cost
 
 
 def add_edge(i):
@@ -35,7 +44,7 @@ def add_edge(i):
             G.add_edge(df.iloc[i, 1], df.iloc[i, 2], weight=cost)
     else:
         for i in range(12849):
-            cost = d_generated_cost(1)
+            cost = dijkstra_generated_cost(df.iloc[i])
             G.add_edge(df.iloc[i, 1], df.iloc[i, 2], weight=cost)
 
 
@@ -46,6 +55,13 @@ def dijkstra_shortest_path(source, target):
     except nx.NetworkXNoPath:
         return None
 
+
+def sum_of_distances(source, destination):
+    try:
+        distance = nx.shortest_path_length(G, source=source, target=destination, weight='distance')
+        return distance
+    except nx.NetworkXNoPath:
+        return None
 
 # Format the output
 def desired_result_string(flight_number, SourceAirport, SourceAirport_Country, DestinationAirport,
@@ -64,13 +80,16 @@ airport_1 = input()
 airport_2 = input()
 add_nodes_to_DiWeGraph()
 add_edge(2)
-# print(G.nodes.get(1))
 first_node = next(iter(G.nodes(data=True)))
-# print(first_node)
 airport_1 = 'Imam Khomeini International Airport'
-airport_2 = 'Raleigh Durham International Airport'
+airport_2 = 'Dubai International Airport'
 shortest_path = dijkstra_shortest_path(airport_1, airport_2)
 if shortest_path is not None:
     print(f"The shortest path from {airport_1} to {airport_2} is: {shortest_path}")
+else:
+    print("No path found.")
+sum_distance = sum_of_distances(airport_1, airport_2)
+if sum_distance is not None:
+    print(f"The sum of distances from source to destination is: {sum_distance}")
 else:
     print("No path found.")
