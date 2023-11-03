@@ -1,9 +1,10 @@
 # https://www.w3schools.com/python/pandas/default.asp
 # https://www.udacity.com/blog/2021/10/implementing-dijkstras-algorithm-in-python.html
-import sys
+# https://pypi.org/project/networkx/
+# https://blog.enterprisedna.co/python-write-to-file/#:~:text=The%20write()%20method%20is,it%20to%20the%20specified%20file.
 
-import pandas as pd
 import networkx as nx
+import pandas as pd
 
 filename = './Flight_Data.csv'
 df = pd.read_csv(filename)
@@ -25,7 +26,6 @@ def a_generate_cost(param):
 
 
 def dijkstra_generated_cost(param):
-
     distance = param['Distance']
     price = param['Price']
     time = param['FlyTime']
@@ -37,6 +37,7 @@ def dijkstra_generated_cost(param):
     return cost
 
 
+# Two options for creating edges using costs
 def add_edge(i):
     if i == 1:
         for i in range(df.size):
@@ -45,7 +46,8 @@ def add_edge(i):
     else:
         for i in range(12849):
             cost = dijkstra_generated_cost(df.iloc[i])
-            G.add_edge(df.iloc[i, 1], df.iloc[i, 2], weight=cost)
+            G.add_edge(df.iloc[i, 1], df.iloc[i, 2], weight=cost,
+                       Distance=df.iloc[i, 13], FlyTime=df.iloc[i, 14], Price=df.iloc[i, 15])
 
 
 # Dijkstra Implementation
@@ -56,40 +58,51 @@ def dijkstra_shortest_path(source, target):
         return None
 
 
-def sum_of_distances(source, destination):
-    try:
-        distance = nx.shortest_path_length(G, source=source, target=destination, weight='distance')
-        return distance
-    except nx.NetworkXNoPath:
-        return None
-
-# Format the output
-def desired_result_string(flight_number, SourceAirport, SourceAirport_Country, DestinationAirport,
-                          DestinationAirport_Country, Distance, FlyTime, Price):
-    return f'''Flight #{flight_number}: 
-    From: {SourceAirport}, {SourceAirport_Country}
-    To: {DestinationAirport}, {DestinationAirport_Country}
-    Duration: {Distance}km
-    Time: {FlyTime}h
-    Price: {Price}$
-    ----------------------------'''
+# Desired string output
+def desired_result_string(path):
+    flight_number = 1
+    total_time = 0
+    total_price = 0
+    total_distance = 0
+    result_string = ""  # Initialize an empty string to store the output
+    for u, v in zip(path, path[1:]):
+        edge_data = G[u][v]
+        distance = round(edge_data['Distance'])
+        price = round(edge_data['Price'])
+        time = round(edge_data['FlyTime'])
+        total_time += time
+        total_price += price
+        total_distance += distance
+        if shortest_path is not None:
+            result_string += f'''
+            Flight #{flight_number}: 
+                From: {u}
+                To: {v}
+                Duration: {distance}km
+                Time: {time}h
+                Price: {price}$
+            ----------------------------'''
+            flight_number += 1
+        else:
+            result_string += "No path found."
+    result_string += f'''
+                Total Price: {total_price}$
+                Total Duration: {total_distance} km
+                Total Time: {total_time}h
+                '''
+    return result_string  # Return the result string
 
 
 print('Enter Airports:')
-airport_1 = input()
-airport_2 = input()
+# airport_1 = input()
+# airport_2 = input()
 add_nodes_to_DiWeGraph()
 add_edge(2)
+
 first_node = next(iter(G.nodes(data=True)))
 airport_1 = 'Imam Khomeini International Airport'
-airport_2 = 'Dubai International Airport'
+airport_2 = 'John F Kennedy International Airport'
+
+# Testing Dijkstra string output
 shortest_path = dijkstra_shortest_path(airport_1, airport_2)
-if shortest_path is not None:
-    print(f"The shortest path from {airport_1} to {airport_2} is: {shortest_path}")
-else:
-    print("No path found.")
-sum_distance = sum_of_distances(airport_1, airport_2)
-if sum_distance is not None:
-    print(f"The sum of distances from source to destination is: {sum_distance}")
-else:
-    print("No path found.")
+print(desired_result_string(shortest_path))
