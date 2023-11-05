@@ -4,7 +4,7 @@
 import pandas as pd
 import networkx as nx
 
-filename = './Flight_Data.csv'
+filename = 'Flight_Data.csv'
 df = pd.read_csv(filename)
 G = nx.DiGraph()
 
