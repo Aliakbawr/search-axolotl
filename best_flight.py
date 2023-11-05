@@ -3,6 +3,7 @@
 
 import pandas as pd
 import networkx as nx
+import math
 
 filename = './Flight_Data.csv'
 df = pd.read_csv(filename)
@@ -16,11 +17,15 @@ def add_nodes_to_DiWeGraph():
     uniqueAirport.reset_index()
     n = len(uniqueAirport)
     for i in range(n):
-        G.add_node(uniqueAirport.iloc[i])
+        G.add_node(uniqueAirport.iloc[i], heuristic=0)
 
 
 def a_generate_cost(param):
-    pass
+    distance = param['Distance']
+    time = param['FlyTime']
+    price = param['Price']
+
+    return 3*distance + 100*time + 20*price
 
 
 def d_generated_cost(param):
@@ -30,9 +35,9 @@ def d_generated_cost(param):
 def add_edge(i):
     G.clear_edges()
     if i == 1:
-        for i in range(df.size):
+        for i in range(12850):
             cost = a_generate_cost(df.iloc[i])
-            G.add_edge(df.iloc[i, 1], df.iloc[i, 2], weight=cost)
+            G.add_edge(df.iloc[i, 1], df.iloc[i, 2], weight=cost, distance='Distance', time='FlyTime', price='Price')
     else:
         for i in range(df.size):
             cost = d_generated_cost(df.iloc[i])
@@ -49,3 +54,49 @@ def desired_result_string(flight_number, SourceAirport, SourceAirport_Country, D
     Time: {FlyTime}h
     Price: {Price}$
     ----------------------------'''
+
+
+def calculate_distance(lat1, lon1, lat2, lon2):
+    # Convert latitude and longitude from degrees to radians
+    lat1 = math.radians(lat1)
+    lon1 = math.radians(lon1)
+    lat2 = math.radians(lat2)
+    lon2 = math.radians(lon2)
+
+    # Haversine formula
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = math.sin(dlat / 2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2)**2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+    # Radius of earth in kilometers. Use 3956 for miles
+    r = 6371.0
+
+    # Calculate the distance
+    distance = r * c
+    return distance
+
+
+def aStarHeuristic(DestinationAirport):
+    desLatitude = 0
+    desLongitude = 0
+    for i in range(12850):
+        if df.iloc[i, 2] == DestinationAirport:
+            desLatitude = df.iloc[i, 10]
+            desLongitude = df.iloc[i, 11]
+            break
+
+    for node in enumerate(G.nodes):
+        for i in range(12850):
+            if df.iloc[i, 1] == node[1]:
+                soLatitude = df.iloc[i, 5]
+                soLongitude = df.iloc[i, 6]
+                distance = calculate_distance(soLatitude, soLongitude, desLatitude, desLongitude)
+                G.nodes[df.iloc[i,1]]['heuristic'] = distance
+                break
+            elif df.iloc[i, 2] == node[1]:
+                soLatitude = df.iloc[i, 10]
+                soLongitude = df.iloc[i, 11]
+                distance = calculate_distance(soLatitude, soLongitude, desLatitude, desLongitude)
+                G.nodes[df.iloc[i,2]]['heuristic'] = distance
+                break
