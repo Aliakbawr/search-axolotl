@@ -21,7 +21,7 @@ def add_nodes_to_DiWeGraph():
         G.add_node(uniqueAirport.iloc[i], heuristic=0)
 
 
-def a_generate_cost(param):
+def a_star_generated_cost(param):
     distance = param['Distance']
     time = param['FlyTime']
     price = param['Price']
@@ -37,8 +37,8 @@ def add_edge(i):
     G.clear_edges()
     if i == 1:
         for i in range(12850):
-            cost = a_generate_cost(df.iloc[i])
-            G.add_edge(df.iloc[i, 1], df.iloc[i, 2], weight=cost, distance='Distance', time='FlyTime', price='Price', flight_number=i)
+            cost = a_star_generated_cost(df.iloc[i])
+            G.add_edge(df.iloc[i, 1], df.iloc[i, 2], weight=cost, distance='Distance', time='FlyTime', price='Price')
     else:
         for i in range(df.size):
             cost = d_generated_cost(df.iloc[i])
@@ -129,12 +129,3 @@ def a_star_algorithm(SourceAirport,DestinationAirport):
         current = came_from[current]
     path.reverse()  # Reverse the path
     return path
-
-print(1)
-add_nodes_to_DiWeGraph()
-print(2)
-add_edge(1)
-print(3)
-path = a_star_algorithm("Imam Khomeini International Airport", "Gaziantep International Airport")
-print(4)
-print(path)
