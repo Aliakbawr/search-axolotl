@@ -4,6 +4,7 @@
 import pandas as pd
 import networkx as nx
 import math
+import heapq
 
 filename = './Flight_Data.csv'
 df = pd.read_csv(filename)
@@ -37,7 +38,7 @@ def add_edge(i):
     if i == 1:
         for i in range(12850):
             cost = a_generate_cost(df.iloc[i])
-            G.add_edge(df.iloc[i, 1], df.iloc[i, 2], weight=cost, distance='Distance', time='FlyTime', price='Price')
+            G.add_edge(df.iloc[i, 1], df.iloc[i, 2], weight=cost, distance='Distance', time='FlyTime', price='Price', flight_number=i)
     else:
         for i in range(df.size):
             cost = d_generated_cost(df.iloc[i])
@@ -77,7 +78,7 @@ def calculate_distance(lat1, lon1, lat2, lon2):
     return distance
 
 
-def aStarHeuristic(DestinationAirport):
+def a_star_heuristic(DestinationAirport):
     desLatitude = 0
     desLongitude = 0
     for i in range(12850):
@@ -92,11 +93,48 @@ def aStarHeuristic(DestinationAirport):
                 soLatitude = df.iloc[i, 5]
                 soLongitude = df.iloc[i, 6]
                 distance = calculate_distance(soLatitude, soLongitude, desLatitude, desLongitude)
-                G.nodes[df.iloc[i,1]]['heuristic'] = distance
+                G.nodes[df.iloc[i,1]]['heuristic'] = 67043*distance
                 break
             elif df.iloc[i, 2] == node[1]:
                 soLatitude = df.iloc[i, 10]
                 soLongitude = df.iloc[i, 11]
                 distance = calculate_distance(soLatitude, soLongitude, desLatitude, desLongitude)
-                G.nodes[df.iloc[i,2]]['heuristic'] = distance
+                G.nodes[df.iloc[i,2]]['heuristic'] = 67043*distance
                 break
+
+
+def a_star_algorithm(SourceAirport,DestinationAirport):
+    a_star_heuristic(DestinationAirport)
+    queue = [(0, SourceAirport)]
+    visited = set()
+    cost_so_far = {SourceAirport: 0}
+    came_from = {SourceAirport: None}
+
+    while queue:
+        cost, current = heapq.heappop(queue)
+        if current == DestinationAirport:
+            break
+        visited.add(current)
+        for node in G.neighbors(current):
+            new_cost = cost_so_far[current] + G.get_edge_data(current, node)['weight']
+            if node not in cost_so_far or new_cost < cost_so_far[node]:
+                cost_so_far[node] = new_cost
+                priority = new_cost + G.nodes[node]['heuristic']
+                heapq.heappush(queue, (priority, node))
+                came_from[node] = current
+
+    path = []
+    while current is not None:
+        path.append(current)
+        current = came_from[current]
+    path.reverse()  # Reverse the path
+    return path
+
+print(1)
+add_nodes_to_DiWeGraph()
+print(2)
+add_edge(1)
+print(3)
+path = a_star_algorithm("Imam Khomeini International Airport", "Gaziantep International Airport")
+print(4)
+print(path)
