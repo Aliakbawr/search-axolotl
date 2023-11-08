@@ -7,10 +7,16 @@ import networkx as nx
 import pandas as pd
 import math
 import heapq
+import time
 
 filename = 'Flight_Data.csv'
 df = pd.read_csv(filename)
 G = nx.DiGraph()
+
+
+def create_graph():
+    add_nodes_to_DiWeGraph()
+    add_edge()
 
 
 def add_nodes_to_DiWeGraph():
@@ -26,12 +32,12 @@ def add_nodes_to_DiWeGraph():
 def generated_cost(param):
     distance = param['Distance']
     price = param['Price']
-    time = param['FlyTime']
+    fly_time = param['FlyTime']
     w2 = 3  # Weight for distance
     w3 = 20  # Weight for price
     w1 = 100  # Weight for time
 
-    cost = w1 * time + w2 * distance + w3 * price
+    cost = w1 * fly_time + w2 * distance + w3 * price
     return cost
 
 
@@ -44,7 +50,7 @@ def add_edge():
 
 
 # Dijkstra Implementation
-def dijkstra_shortest_path(source, target):
+def dijkstra_algorithm(source, target):
     try:
         return nx.dijkstra_path(G, source, target, weight='weight')
     except nx.NetworkXNoPath:
@@ -62,8 +68,8 @@ def desired_result_string(path):
         edge_data = G[u][v]
         distance = round(edge_data['Distance'])
         price = round(edge_data['Price'])
-        time = round(edge_data['FlyTime'])
-        total_time += time
+        fly_time = round(edge_data['FlyTime'])
+        total_time += fly_time
         total_price += price
         total_distance += distance
         if path is not None:
@@ -72,9 +78,10 @@ def desired_result_string(path):
                 From: {u}
                 To: {v}
                 Duration: {distance}km
-                Time: {time}h
+                Time: {fly_time}h
                 Price: {price}$
-            ----------------------------'''
+            ----------------------------
+'''
             flight_number += 1
         else:
             result_string += "No path found."
@@ -86,18 +93,6 @@ def desired_result_string(path):
     return result_string  # Return the result string
 
 
-# Format the output
-def desired_result_string(flight_number, SourceAirport, SourceAirport_Country, DestinationAirport,
-                          DestinationAirport_Country, Distance, FlyTime, Price):
-    return f'''Flight #{flight_number}: 
-    From: {SourceAirport}, {SourceAirport_Country}
-    To: {DestinationAirport}, {DestinationAirport_Country}
-    Duration: {Distance}km
-    Time: {FlyTime}h
-    Price: {Price}$
-    ----------------------------'''
-
-
 def calculate_distance(lat1, lon1, lat2, lon2):
     # Convert latitude and longitude from degrees to radians
     lat1 = math.radians(lat1)
@@ -106,9 +101,9 @@ def calculate_distance(lat1, lon1, lat2, lon2):
     lon2 = math.radians(lon2)
 
     # Haversine formula
-    dlon = lon2 - lon1
-    dlat = lat2 - lat1
-    a = math.sin(dlat / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2
+    d_longitude = lon2 - lon1
+    d_latitude = lat2 - lat1
+    a = math.sin(d_latitude / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(d_longitude / 2) ** 2
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
     # Radius of earth in kilometers. Use 3956 for miles
@@ -170,3 +165,34 @@ def a_star_algorithm(SourceAirport, DestinationAirport):
         current = came_from[current]
     path.reverse()  # Reverse the path
     return path
+
+
+create_graph()
+print("Enter The Source Airport And The Destination Airport")
+user_input = input()
+source_airport, destination_airport = user_input.split(" - ")
+end_line = "\n.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-"
+
+file = open('a_star.txt', 'w')
+start_time = time.time()
+a_star_path = a_star_algorithm(source_airport, destination_airport)
+end_time = time.time()
+a_star_time = end_time - start_time
+a_star_beginner = "A* Algorithm\nExecution Time: "
+line = a_star_beginner + str(a_star_time) + end_line
+file.write(line)
+file.write(desired_result_string(a_star_path))
+file.close()
+
+file = open('dijkstra.txt', 'w', encoding='utf-8')
+start_time = time.time()
+dijkstra_path = dijkstra_algorithm(source_airport, destination_airport)
+end_time = time.time()
+dijkstra_time = end_time - start_time
+dijkstra_beginner = "Dijkstra Algorithm\nExecution Time: "
+line = dijkstra_beginner + str(dijkstra_time) + end_line
+file.write(line)
+file.write(desired_result_string(dijkstra_path))
+file.close()
+
+print("Files Generated")

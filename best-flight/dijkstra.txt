@@ -1,0 +1,55 @@
+Dijkstra Algorithm
+Execution Time: 0.0
+.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
+            Flight #1: 
+                From: Imam Khomeini International Airport
+                To: Esenboğa International Airport
+                Duration: 1676km
+                Time: 3h
+                Price: 808$
+            ----------------------------
+
+            Flight #2: 
+                From: Esenboğa International Airport
+                To: Atatürk International Airport
+                Duration: 366km
+                Time: 1h
+                Price: 153$
+            ----------------------------
+
+            Flight #3: 
+                From: Atatürk International Airport
+                To: John F Kennedy International Airport
+                Duration: 8052km
+                Time: 11h
+                Price: 3996$
+            ----------------------------
+
+            Flight #4: 
+                From: John F Kennedy International Airport
+                To: Philadelphia International Airport
+                Duration: 151km
+                Time: 1h
+                Price: 45$
+            ----------------------------
+
+            Flight #5: 
+                From: Philadelphia International Airport
+                To: Baltimore/Washington International Thurgood Marshall Airport
+                Duration: 145km
+                Time: 1h
+                Price: 42$
+            ----------------------------
+
+            Flight #6: 
+                From: Baltimore/Washington International Thurgood Marshall Airport
+                To: Raleigh Durham International Airport
+                Duration: 412km
+                Time: 1h
+                Price: 176$
+            ----------------------------
+
+                Total Price: 5220$
+                Total Duration: 10802 km
+                Total Time: 18h
+                
