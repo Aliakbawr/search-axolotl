@@ -57,42 +57,6 @@ def dijkstra_algorithm(source, target):
         return None
 
 
-# Desired string output
-def desired_result_string(path):
-    flight_number = 1
-    total_time = 0
-    total_price = 0
-    total_distance = 0
-    result_string = ""  # Initialize an empty string to store the output
-    for u, v in zip(path, path[1:]):
-        edge_data = G[u][v]
-        distance = round(edge_data['Distance'])
-        price = round(edge_data['Price'])
-        fly_time = round(edge_data['FlyTime'])
-        total_time += fly_time
-        total_price += price
-        total_distance += distance
-        if path is not None:
-            result_string += f'''
-            Flight #{flight_number}: 
-                From: {u}
-                To: {v}
-                Duration: {distance}km
-                Time: {fly_time}h
-                Price: {price}$
-            ----------------------------
-'''
-            flight_number += 1
-        else:
-            result_string += "No path found."
-    result_string += f'''
-                Total Price: {total_price}$
-                Total Duration: {total_distance} km
-                Total Time: {total_time}h
-                '''
-    return result_string  # Return the result string
-
-
 def calculate_distance(lat1, lon1, lat2, lon2):
     # Convert latitude and longitude from degrees to radians
     lat1 = math.radians(lat1)
@@ -145,6 +109,7 @@ def a_star_algorithm(SourceAirport, DestinationAirport):
     visited = set()
     cost_so_far = {SourceAirport: 0}
     came_from = {SourceAirport: None}
+    current = None
 
     while queue:
         cost, current = heapq.heappop(queue)
@@ -165,6 +130,42 @@ def a_star_algorithm(SourceAirport, DestinationAirport):
         current = came_from[current]
     path.reverse()  # Reverse the path
     return path
+
+
+# Desired string output
+def desired_result_string(path):
+    flight_number = 1
+    total_time = 0
+    total_price = 0
+    total_distance = 0
+    result_string = ""  # Initialize an empty string to store the output
+    for u, v in zip(path, path[1:]):
+        edge_data = G[u][v]
+        distance = round(edge_data['Distance'])
+        price = round(edge_data['Price'])
+        fly_time = round(edge_data['FlyTime'])
+        total_time += fly_time
+        total_price += price
+        total_distance += distance
+        if path is not None:
+            result_string += f'''
+            Flight #{flight_number}: 
+                From: {u}
+                To: {v}
+                Duration: {distance}km
+                Time: {fly_time}h
+                Price: {price}$
+            ----------------------------
+'''
+            flight_number += 1
+        else:
+            result_string += "No path found."
+    result_string += f'''
+                Total Price: {total_price}$
+                Total Duration: {total_distance} km
+                Total Time: {total_time}h
+                '''
+    return result_string  # Return the result string
 
 
 create_graph()
