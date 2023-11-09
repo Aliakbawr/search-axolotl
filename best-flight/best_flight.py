@@ -1,8 +1,3 @@
-# https://www.w3schools.com/python/pandas/default.asp
-# https://www.udacity.com/blog/2021/10/implementing-dijkstras-algorithm-in-python.html
-# https://pypi.org/project/networkx/
-# https://blog.enterprisedna.co/python-write-to-file/#:~:text=The%20write()%20method%20is,it%20to%20the%20specified%20file.
-
 import networkx as nx
 import pandas as pd
 import math
@@ -41,9 +36,9 @@ def generated_cost(param):
     return cost
 
 
-# Two options for creating edges using costs
+# Creating edges using costs
 def add_edge():
-    for i in range(12849):
+    for i in range(12850):
         cost = generated_cost(df.iloc[i])
         G.add_edge(df.iloc[i, 1], df.iloc[i, 2], weight=cost,
                    Distance=df.iloc[i, 13], FlyTime=df.iloc[i, 14], Price=df.iloc[i, 15])
@@ -51,10 +46,23 @@ def add_edge():
 
 # Dijkstra Implementation
 def dijkstra_algorithm(source, target):
-    try:
-        return nx.dijkstra_path(G, source, target, weight='weight')
-    except nx.NetworkXNoPath:
-        return None
+    shortest_paths = {source: (None, 0)}
+    queue = [(0, source)]
+    while queue:
+        (dist, current) = heapq.heappop(queue)
+        for neighbor, data in G[current].items():
+            old_cost = shortest_paths.get(neighbor, (None, float('inf')))[1]
+            new_cost = dist + data['weight']
+            if new_cost < old_cost:
+                heapq.heappush(queue, (new_cost, neighbor))
+                shortest_paths[neighbor] = (current, new_cost)
+    path = []
+    while target is not None:
+        path.append(target)
+        next_node = shortest_paths[target][0]
+        target = next_node
+    path = path[::-1]
+    return path
 
 
 def calculate_distance(lat1, lon1, lat2, lon2):
