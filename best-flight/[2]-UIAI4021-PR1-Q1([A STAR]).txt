@@ -1,0 +1,28 @@
+A* Algorithm
+Execution Time: 2m5s
+.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
+Flight #1 (Turkish Airlines): 
+From: Imam Khomeini International Airport
+To: Atatürk International Airport
+Duration: 2041km
+Time: 3h
+Price: 238$
+----------------------------
+Flight #2 (Turkish Airlines): 
+From: Atatürk International Airport
+To: Washington Dulles International Airport
+Duration: 8413km
+Time: 11h
+Price: 894$
+----------------------------
+Flight #3 (United Airlines): 
+From: Washington Dulles International Airport
+To: Raleigh Durham International Airport
+Duration: 361km
+Time: 1h
+Price: 53$
+----------------------------
+Total Price: 1185$
+Total Duration: 10815 km
+Total Time: 15h
+                

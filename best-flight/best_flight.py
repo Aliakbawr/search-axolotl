@@ -4,44 +4,25 @@ import math
 import heapq
 import time
 
-filename = 'Flight_Data.csv'
-df = pd.read_csv(filename)
-G = nx.DiGraph()
-
 
 def create_graph():
-    add_nodes_to_DiWeGraph()
-    add_edge()
-
-
-def add_nodes_to_DiWeGraph():
-    uniqueSource = df['SourceAirport'].squeeze()
-    uniqueDes = df['DestinationAirport'].squeeze()
-    uniqueAirport = pd.concat([uniqueDes, uniqueSource]).drop_duplicates()
-    uniqueAirport.reset_index()
-    n = len(uniqueAirport)
-    for i in range(n):
-        G.add_node(uniqueAirport.iloc[i], heuristic=0)
+    for i in range(6836):
+        cost = generated_cost(df.iloc[i])
+        G.add_edge(df.iloc[i, 1], df.iloc[i, 2], weight=cost,
+                   Distance=df.iloc[i, 13], FlyTime=df.iloc[i, 14], Price=df.iloc[i, 15], Airline=df.iloc[i, 0])
 
 
 def generated_cost(param):
+    fly_time = param['FlyTime']
     distance = param['Distance']
     price = param['Price']
-    fly_time = param['FlyTime']
+
+    w1 = 100  # Weight for time
     w2 = 3  # Weight for distance
     w3 = 20  # Weight for price
-    w1 = 100  # Weight for time
 
     cost = w1 * fly_time + w2 * distance + w3 * price
     return cost
-
-
-# Creating edges using costs
-def add_edge():
-    for i in range(12850):
-        cost = generated_cost(df.iloc[i])
-        G.add_edge(df.iloc[i, 1], df.iloc[i, 2], weight=cost,
-                   Distance=df.iloc[i, 13], FlyTime=df.iloc[i, 14], Price=df.iloc[i, 15])
 
 
 # Dijkstra Implementation
@@ -89,14 +70,14 @@ def calculate_distance(lat1, lon1, lat2, lon2):
 def a_star_heuristic(DestinationAirport):
     desLatitude = 0
     desLongitude = 0
-    for i in range(12850):
+    for i in range(6836):
         if df.iloc[i, 2] == DestinationAirport:
             desLatitude = df.iloc[i, 10]
             desLongitude = df.iloc[i, 11]
             break
 
     for node in enumerate(G.nodes):
-        for i in range(12850):
+        for i in range(6836):
             if df.iloc[i, 1] == node[1]:
                 soLatitude = df.iloc[i, 5]
                 soLongitude = df.iloc[i, 6]
@@ -124,7 +105,7 @@ def a_star_algorithm(SourceAirport, DestinationAirport):
         if current == DestinationAirport:
             break
         visited.add(current)
-        for node in G.neighbors(current):
+        for node in list(G.successors(current)):
             new_cost = cost_so_far[current] + G.get_edge_data(current, node)['weight']
             if node not in cost_so_far or new_cost < cost_so_far[node]:
                 cost_so_far[node] = new_cost
@@ -157,47 +138,50 @@ def desired_result_string(path):
         total_distance += distance
         if path is not None:
             result_string += f'''
-            Flight #{flight_number}: 
-                From: {u}
-                To: {v}
-                Duration: {distance}km
-                Time: {fly_time}h
-                Price: {price}$
-            ----------------------------
-'''
+Flight #{flight_number} ({edge_data['Airline']}): 
+From: {u}
+To: {v}
+Duration: {distance}km
+Time: {fly_time}h
+Price: {price}$
+----------------------------'''
             flight_number += 1
         else:
             result_string += "No path found."
     result_string += f'''
-                Total Price: {total_price}$
-                Total Duration: {total_distance} km
-                Total Time: {total_time}h
+Total Price: {total_price}$
+Total Duration: {total_distance} km
+Total Time: {total_time}h
                 '''
     return result_string  # Return the result string
 
 
+filename = 'Flight_Data.csv'
+df = pd.read_csv(filename)
+G = nx.DiGraph()
 create_graph()
 print("Enter The Source Airport And The Destination Airport")
 user_input = input()
 source_airport, destination_airport = user_input.split(" - ")
 end_line = "\n.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-"
 
-file = open('a_star.txt', 'w')
+file = open('[2]-UIAI4021-PR1-Q1([A STAR]).txt', 'w')
 start_time = time.time()
 a_star_path = a_star_algorithm(source_airport, destination_airport)
 end_time = time.time()
-a_star_time = end_time - start_time
+minute, second = divmod(end_time - start_time, 60)
+a_star_time = f'{round(minute)}m{round(second)}s'
 a_star_beginner = "A* Algorithm\nExecution Time: "
 line = a_star_beginner + str(a_star_time) + end_line
 file.write(line)
 file.write(desired_result_string(a_star_path))
 file.close()
-
-file = open('dijkstra.txt', 'w', encoding='utf-8')
+file = open('[2]-UIAI4021-PR1-Q1([DIJKSTRA]).txt', 'w', encoding='utf-8')
 start_time = time.time()
 dijkstra_path = dijkstra_algorithm(source_airport, destination_airport)
 end_time = time.time()
-dijkstra_time = end_time - start_time
+minute, second = divmod(end_time - start_time, 60)
+dijkstra_time = f'{round(minute)}m{round(second)}s'
 dijkstra_beginner = "Dijkstra Algorithm\nExecution Time: "
 line = dijkstra_beginner + str(dijkstra_time) + end_line
 file.write(line)
