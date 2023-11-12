@@ -39,4 +39,3 @@ def df_creator():
 
 
 df = df_creator()
-print(df.keys())
