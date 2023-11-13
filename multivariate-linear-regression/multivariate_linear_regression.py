@@ -1,5 +1,8 @@
+import time
 import pandas as pd
 import numpy as np
+from sklearn.metrics import mean_absolute_error
+from sklearn.model_selection import train_test_split
 
 
 def df_creator():
@@ -39,104 +42,120 @@ def df_creator():
     return encoded_df
 
 
-# Define "x"s
-df = df_creator()
-x1 = df['stops_mapping']
-x2 = df['class_mapping']
-x3 = df['duration']
-x4 = df['days_left']
-x5 = df['afternoon_departure']
-x5 = x5.astype(int)
-x6 = df['early_morning_departure']
-x6 = x6.astype(int)
-x7 = df['evening_departure']
-x7 = x7.astype(int)
-x8 = df['late_night_departure']
-x8 = x8.astype(int)
-x9 = df['morning_departure']
-x9 = x9.astype(int)
-x10 = df['night_departure']
-x10 = x10.astype(int)
-x11 = df['afternoon_arrival']
-x11 = x11.astype(int)
-x12 = df['early_morning_arrival']
-x12 = x12.astype(int)
-x13 = df['evening_arrival']
-x13 = x13.astype(int)
-x14 = df['late_night_arrival']
-x14 = x14.astype(int)
-x15 = df['morning_arrival']
-x15 = x15.astype(int)
-x16 = df['night_arrival']
-x16 = x16.astype(int)
-
-# Define "y"
-y = df['price']
-
-# Normalize features
-x1 = (x1 - x1.mean()) / x1.std()
-x2 = (x2 - x2.mean()) / x2.std()
-x3 = (x3 - x3.mean()) / x3.std()
-x4 = (x4 - x4.mean()) / x4.std()
-x5 = (x5 - x5.mean()) / x5.std()
-x6 = (x6 - x6.mean()) / x6.std()
-x7 = (x7 - x7.mean()) / x7.std()
-x8 = (x8 - x8.mean()) / x8.std()
-x9 = (x9 - x9.mean()) / x9.std()
-x10 = (x10 - x10.mean()) / x10.std()
-x11 = (x11 - x11.mean()) / x11.std()
-x12 = (x12 - x12.mean()) / x12.std()
-x13 = (x13 - x13.mean()) / x13.std()
-x14 = (x14 - x14.mean()) / x14.std()
-x15 = (x15 - x15.mean()) / x15.std()
-x16 = (x16 - x16.mean()) / x16.std()
-
-x = np.c_[x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, np.ones(x1.shape[0])]
-x_mat = x.shape
-print(x_mat)
-
-# Gradiant Descent Algorithm
-learning_rate = 0.001
-epochs = 20000
-N = y.size
-coeff = np.random.rand(17)
-print('Initial values for coefficients : ', coeff)
+def define_and_normalize_xs():
+    a1 = df['stops_mapping']
+    a2 = df['class_mapping']
+    a3 = df['duration']
+    a4 = df['days_left']
+    a5 = df['afternoon_departure']
+    a5 = a5.astype(int)
+    a6 = df['early_morning_departure']
+    a6 = a6.astype(int)
+    a7 = df['evening_departure']
+    a7 = a7.astype(int)
+    a8 = df['late_night_departure']
+    a8 = a8.astype(int)
+    a9 = df['morning_departure']
+    a9 = a9.astype(int)
+    a10 = df['night_departure']
+    a10 = a10.astype(int)
+    a11 = df['afternoon_arrival']
+    a11 = a11.astype(int)
+    a12 = df['early_morning_arrival']
+    a12 = a12.astype(int)
+    a13 = df['evening_arrival']
+    a13 = a13.astype(int)
+    a14 = df['late_night_arrival']
+    a14 = a14.astype(int)
+    a15 = df['morning_arrival']
+    a15 = a15.astype(int)
+    a16 = df['night_arrival']
+    a16 = a16.astype(int)
+    # Normalize features
+    a1 = (a1 - a1.mean()) / a1.std()
+    a2 = (a2 - a2.mean()) / a2.std()
+    a3 = (a3 - a3.mean()) / a3.std()
+    a4 = (a4 - a4.mean()) / a4.std()
+    a5 = (a5 - a5.mean()) / a5.std()
+    a6 = (a6 - a6.mean()) / a6.std()
+    a7 = (a7 - a7.mean()) / a7.std()
+    a8 = (a8 - a8.mean()) / a8.std()
+    a9 = (a9 - a9.mean()) / a9.std()
+    a10 = (a10 - a10.mean()) / a10.std()
+    a11 = (a11 - a11.mean()) / a11.std()
+    a12 = (a12 - a12.mean()) / a12.std()
+    a13 = (a13 - a13.mean()) / a13.std()
+    a14 = (a14 - a14.mean()) / a14.std()
+    a15 = (a15 - a15.mean()) / a15.std()
+    a16 = (a16 - a16.mean()) / a16.std()
+    return np.c_[a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16]
 
 
 # Algorithm
-def gradiant_descent(x, y, coeff, epochs, learning_rate):
+def gradiant_descent(X, Y):
+    learning_rate = 0.001
+    epochs = 2700
+    N = Y.size
+    coeff = np.random.rand(17)
     past_costs = []
-    past_coeff = [coeff]
+    PAST_COEFF = [coeff]
     for i in range(epochs):
-        prediction = np.dot(x, coeff)
-        error = prediction - y
+        prediction = np.dot(X, coeff)
+        error = prediction - Y
         cost = 1 / (2 * N) * np.dot(error.T, error)
         past_costs.append(cost)
-        der = (1 / N) * learning_rate * np.dot(x.T, error)
+        der = (1 / N) * learning_rate * np.dot(X.T, error)
         coeff = coeff - der
-        past_coeff.append(coeff)
-    return past_coeff, past_costs
+        PAST_COEFF.append(coeff)
+    return PAST_COEFF, past_costs
 
 
-past_coeff, past_cost = gradiant_descent(x, y, coeff, epochs, learning_rate)
-coeff = past_coeff[-1]
-print("final values of coefficients : ", coeff)
+def generate_errors():
+    # Predictions
+    predictions = np.dot(x_test, coeffi)
+    # Mean Squared Error (MSE)
+    mse = np.mean((y_test - predictions) ** 2)
+    # Root Mean Squared Error (RMSE)
+    rmse = np.sqrt(mse)
+    # R-squared (R²)
+    mean_y = np.mean(y_test)
+    ss_total = np.sum((y_test - mean_y) ** 2)
+    ss_residual = np.sum((y_test - predictions) ** 2)
+    r_squared = 1 - (ss_residual / ss_total)
+    # Mean Absolute Error (MAE)
+    mae = mean_absolute_error(y_test, predictions)
+    return mse, rmse, mae, r_squared
 
-# Predictions
-predictions = np.dot(x, coeff)
 
-# Mean Squared Error (MSE)
-mse = np.mean((y - predictions) ** 2)
+def generate_file():
+    st = "PRICE = "
+    for k in range(16):
+        st = st + f' ({coeffi[k]}) * [{df.columns[k]}] +'
 
-# Root Mean Squared Error (RMSE)
-rmse = np.sqrt(mse)
+    ans = st[:-1]
+    t = f'\nTraining Time: {round(end_time - start_time)}s'
+    MSE, RMSE, MAE, R_SQUARED = generate_errors()
+    errors = (f'\n\nLogs: '
+              f'\nMSE: {MSE}'
+              f'\nRMSE: {RMSE}'
+              f'\nMAE: {MAE}'
+              f'\nR2: {R_SQUARED}')
 
-# R-squared (R²)
-mean_y = np.mean(y)
-ss_total = np.sum((y - mean_y) ** 2)
-ss_residual = np.sum((y - predictions) ** 2)
-r_squared = 1 - (ss_residual / ss_total)
+    file = open('[2]-UIAI4021-PR1-Q2.txt.txt', 'w')
+    file.write(ans)
+    file.write(t)
+    file.write(errors)
+    file.close()
 
-print(f'Mean Squared Error (MSE): {mse}')
-print(f'Root Mean Squared Error (RMSE): {rmse}')
-print(f'R-squared (R²): {r_squared}')
+
+df = df_creator()
+# Define "y"
+y = df['price']
+x = np.c_[define_and_normalize_xs(), np.ones(270138)]
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, shuffle=True)
+start_time = time.time()
+past_coeff, past_cost = gradiant_descent(x_train, y_train)
+end_time = time.time()
+coeffi = past_coeff[-1]
+
+generate_file()

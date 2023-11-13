@@ -1,0 +1,8 @@
+PRICE =  (-1796.9589975458555) * [stops_mapping] + (19543.622556085484) * [class_mapping] + (1313.753747707187) * [afternoon_departure] + (-1650.3894393215942) * [early_morning_departure] + (-307.208507507701) * [evening_departure] + (3.500680327630214) * [late_night_departure] + (-11.90436156384055) * [morning_departure] + (-41.21317489221418) * [night_departure] + (171.57074381041468) * [afternoon_arrival] + (126.79082298352972) * [early_morning_arrival] + (-342.58049615945686) * [evening_arrival] + (-542.060213081531) * [late_night_arrival] + (418.71409284337375) * [morning_arrival] + (-347.1426776725553) * [night_arrival] + (-84.56387261524681) * [duration] + (344.9037778252164) * [days_left] 
+Training Time: 13s
+
+Logs: 
+MSE: 55006388.71541994
+RMSE: 7416.629201693984
+MAE: 4817.140224507364
+R2: 0.8926742392617898
